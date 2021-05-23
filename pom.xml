@@ -17,9 +17,9 @@
     </parent>
 
     <properties>
-        <java.version>15</java.version>
-        <maven.compiler.source>15</maven.compiler.source>
-        <maven.compiler.target>15</maven.compiler.target>
+        <java.version>11</java.version>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
         <spring-boot.version>2.2.6.RELEASE</spring-boot.version>
         <postgreslql.version>42.2.20</postgreslql.version>
         <swagger.version>3.0.0</swagger.version>
@@ -51,7 +51,11 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+            <version>${spring-boot.version}</version>
+        </dependency>
         <!-- postgresql -->
         <dependency>
             <groupId>org.postgresql</groupId>
@@ -114,6 +118,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring-boot.version}</version>
                 <configuration>
                     <excludes>
                         <exclude>
@@ -125,5 +130,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

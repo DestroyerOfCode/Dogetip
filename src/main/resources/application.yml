@@ -3,13 +3,13 @@ spring:
     driver-class-name: org.postgresql.Driver
     username: prepelicamangalica
     password: root
-    url: jdbc:postgresql://localhost/postgres
-    platform: dogetip
+    url: jdbc:postgresql://localhost:5432/dogetip
+    platform: postgresql
     initialization-mode: always
-    continue-on-error: true
+    continue-on-error: false
   jpa:
     show-sql: true
     generate-ddl: true
     hibernate:
-      ddl-auto: create
+      ddl-auto: create-drop
     database: postgresql

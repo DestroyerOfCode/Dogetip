@@ -46,8 +46,8 @@ public class UserService {
 
     public Optional<UserDTO> createUser(UserDTO dto) {
         try {
-            userLogic.encryptUserPassword(dto);
-            userLogic.assignExistingRoles(dto);
+            dto.setPassword(userLogic.encryptUserPassword(dto.getPassword()));
+            dto.setUserRoles(userLogic.assignExistingRoles(dto.getUserRoles()));
             User user = userConverter.toEntity(dto);
 
             userRepository.save(user);

@@ -1,6 +1,7 @@
 package com.doge.tip.businesslogic.user;
 
 import com.doge.tip.converter.user.RoleConverter;
+import com.doge.tip.dto.user.RoleDTO;
 import com.doge.tip.dto.user.UserDTO;
 import com.doge.tip.model.user.Role;
 import com.doge.tip.model.user.RoleRepository;
@@ -27,17 +28,18 @@ public class UserLogic {
         this.roleConverter = roleConverter;
     }
 
-    public void encryptUserPassword(UserDTO dto) {
+    public String encryptUserPassword(String plainTextPassword) {
         try {
-            dto.setPassword(passwordEncoder.encode(dto.getPassword()));
+            return passwordEncoder.encode(plainTextPassword);
         } catch (RuntimeException e) {
             System.out.println("oops");
         }
+        throw new RuntimeException("error encrypting password");
     }
 
-    public void assignExistingRoles(UserDTO userDTO) {
+    public Set<RoleDTO> assignExistingRoles(Set<RoleDTO> userDTOUserRoles) {
         Set<Role> userRoles = new HashSet<>();
-        if (!userDTO.getUserRoles().stream().allMatch(x -> {
+        if (!userDTOUserRoles.stream().allMatch(x -> {
             ArrayList<Role> selectedUserRoles = (ArrayList<Role>) roleRepository.getRolesByRoleName(x.getRoleName());
             if (selectedUserRoles != null && !selectedUserRoles.isEmpty()) {
                 userRoles.add(selectedUserRoles.get(0));
@@ -46,6 +48,7 @@ public class UserLogic {
             return false;
         }))
             throw new RuntimeException("Unexisting roles");
-        userDTO.setUserRoles(userRoles.stream().map(roleConverter::toDTO).collect(Collectors.toSet()));
+        return userRoles.stream().map(roleConverter::toDTO).collect(Collectors.toSet());
+//                userDTO.setUserRoles(userRoles.stream().map(roleConverter::toDTO).collect(Collectors.toSet()));
     }
 }

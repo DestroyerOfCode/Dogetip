@@ -2,10 +2,7 @@ package com.doge.tip.model.user;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.w3c.dom.stylesheets.LinkStyle;
 
@@ -21,6 +18,7 @@ import java.util.UUID;
 @Table(name = "role", schema = "public")
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class Role {

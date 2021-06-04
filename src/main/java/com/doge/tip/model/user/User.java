@@ -48,18 +48,7 @@ public class User {
     @Column(name = "user_password", nullable = false, length = 100)
     private String password;
 
-//    @Column(name = "user_roles", nullable = false)
-//    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-//    @JoinColumn(name = "user_roles", referencedColumnName = "user")
-//    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-//    @JoinTable(
-//            name = "user_roles",
-//            joinColumns = @JoinColumn(name = "user_id"),
-//            inverseJoinColumns = @JoinColumn(name = "role_id"),
-//            foreignKey = @ForeignKey(name = "user_role_fk")
-//    )
-
-    @NotEmpty(message = "You must assign at least a single role to user")
+    @NotEmpty(message = "You must assign at least a single role to any user")
     @ManyToMany(fetch = FetchType.EAGER,
             cascade = {CascadeType.MERGE, CascadeType.REMOVE},
             targetEntity = Role.class
@@ -69,13 +58,5 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-//    @JoinColumn(name = "user_id"
-//              nullable = false
-//              table = "Role",
-//              foreignKey = @ForeignKey(name = "user_role_fk"),
-//                referencedColumnName = "role_id"
-
-//    )
-//    @MapsId
     private Set<Role> userRoles;
 }

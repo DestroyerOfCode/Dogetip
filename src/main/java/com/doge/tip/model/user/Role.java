@@ -48,10 +48,6 @@ public class Role {
     @Column(name = "role_description", length = 100)
     private String roleDescription;
 
-//    @ManyToMany(mappedBy = "userRoles", targetEntity = User.class)
-//    private Set<User> users;
-
-
 //    @ManyToMany
 //    @JoinTable(
 //            name = "role_authorities",

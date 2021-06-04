@@ -1,19 +1,23 @@
 package com.doge.tip.model.user;
 
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
-import java.util.Collection;
-import java.util.List;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.UUID;
 
-//@Entity
-//@Table(name = "authorities", schema = "public")
+@Entity
+@Table(name = "authorities", schema = "public")
+@Builder
+@Getter
+@Setter
 public class Authority {
 
-//    @Column(name = "roles")
-//    @OneToMany(mappedBy = "role_authorities", orphanRemoval = true)
-//    private Roles roles;
     @Id
     @GeneratedValue(
             strategy = GenerationType.AUTO,
@@ -23,11 +27,17 @@ public class Authority {
             name = "pg-uuid",
             strategy = "uuid2"
     )
+    @Column(name = "authority_id", unique = true, nullable = false, updatable = false, insertable = false)
     private UUID authorityId;
 
+    @NotNull(message = "The authority name must NOT be left empty (null)! Please, input a non-null value!")
+    @NotBlank(message = "The authority name must NOT be left blank (without an alpha-numeric sign)!")
+    @Size(max = 100, message = "The highest amount of characters in authority name allowed is 100 (a hundred)!")
+    @Column(name = "authority_name", nullable = false, length = 100, unique = true)
     private String authorityName;
 
-//    @ManyToMany(mappedBy = "authorities")
-//    private List<Roles> roles;
+    @Size(max = 255, message = "The highest amount of characters in authority description allowed is 255!")
+    @Column(name = "authority_description", length = 100)
+    private String authorityDescription;
 
 }

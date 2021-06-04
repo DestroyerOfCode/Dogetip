@@ -1,5 +1,6 @@
 package com.doge.tip.controller.user;
 
+import com.doge.tip.dto.user.AuthorityDTO;
 import com.doge.tip.dto.user.RoleDTO;
 import com.doge.tip.dto.user.UserDTO;
 import com.doge.tip.service.user.UserService;
@@ -24,16 +25,23 @@ public class UserController {
     }
 
     @PostMapping(value = "role/add", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<RoleDTO> createUserRole(@RequestBody RoleDTO role) {
-        if (userService.createUserRole(role).isPresent())
-            return new ResponseEntity<>(role, HttpStatus.CREATED);
-        throw new RuntimeException("error creating " + role.getRoleName());
+    public ResponseEntity<RoleDTO> createUserRole(@RequestBody RoleDTO dto) {
+        if (userService.createUserRole(dto).isPresent())
+            return new ResponseEntity<>(dto, HttpStatus.CREATED);
+        throw new RuntimeException("error creating " + dto.getRoleName());
     }
 
     @PostMapping(value = "user/add", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO user) {
-        if (userService.createUser(user).isPresent())
-            return new ResponseEntity<>(user, HttpStatus.CREATED);
-        throw new RuntimeException("error creating " + user.getUserName());
+    public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO dto) {
+        if (userService.createUser(dto).isPresent())
+            return new ResponseEntity<>(dto, HttpStatus.CREATED);
+        throw new RuntimeException("error creating " + dto.getUserName());
+    }
+
+    @PostMapping(value = "authority/add", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<AuthorityDTO> createAuthority(@RequestBody AuthorityDTO dto) {
+        if (userService.createAuthority(dto).isPresent())
+            return new ResponseEntity<>(dto, HttpStatus.CREATED);
+        throw new RuntimeException("error creating " + dto.getAuthorityName());
     }
 }

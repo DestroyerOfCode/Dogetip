@@ -33,7 +33,7 @@ public class User {
             strategy = "uuid2"
     )
     @NotNull(message = "The value userId must be NOT null and hence must be set!")
-    @Column(name = "user_id", nullable = false, updatable = false, unique = true)
+    @Column(name = "user_id", nullable = false, updatable = false, unique = true, insertable = false)
     private UUID userId;
 
     @Size(max = 100)

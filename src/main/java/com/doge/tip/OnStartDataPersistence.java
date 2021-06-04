@@ -1,16 +1,14 @@
 package com.doge.tip;
 
 import com.doge.tip.businesslogic.user.UserLogic;
-import com.doge.tip.model.user.Role;
-import com.doge.tip.model.user.RoleRepository;
-import com.doge.tip.model.user.User;
-import com.doge.tip.model.user.UserRepository;
+import com.doge.tip.model.user.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import java.util.HashSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -21,26 +19,44 @@ public class OnStartDataPersistence implements CommandLineRunner {
 
     private final RoleRepository roleRepository;
     private final UserRepository userRepository;
+    private final AuthorityRepository authorityRepository;
     private final UserLogic userLogic;
 
+    private final Authority authoritySendDoge = Authority.builder().authorityName("sendDogeAuthority")
+            .authorityDescription("authority to Send Doge").build();
+    private final Authority authoritySendAdminDoge = Authority.builder().authorityName("sendAdminDogeAuthority")
+            .authorityDescription("Authority to send Admin Doge").build();
 
-    private final Role adminRole = Role.builder().roleName("admin").roleDescription("Admin Role").build();
-    private final Role userRole = Role.builder().roleName("user").roleDescription("User Role").build();
+    private final Role adminRole = Role.builder().roleName("admin").roleDescription("Admin Role")
+            .authorities(new HashSet<>(Stream.of(authoritySendDoge, authoritySendAdminDoge)
+                .collect(Collectors.toSet())))
+            .build();
+    private final Role userRole = Role.builder().roleName("user").roleDescription("User Role")
+            .authorities(new HashSet<>(Stream.of(authoritySendDoge).collect(Collectors.toSet())))
+            .build();
 
     @Autowired
-    public OnStartDataPersistence(RoleRepository roleRepository, UserRepository userRepository, UserLogic userLogic) {
+    public OnStartDataPersistence(RoleRepository roleRepository, UserRepository userRepository,
+                                  AuthorityRepository authorityRepository, UserLogic userLogic) {
         this.roleRepository = roleRepository;
         this.userRepository = userRepository;
+        this.authorityRepository = authorityRepository;
         this.userLogic = userLogic;
     }
 
     @Override
     public void run(String...args) throws Exception {
 
+        persistAuhorities();
         persistRoles();
         persistUsers();
 
         LOG.info("Finished persisting initial data");
+    }
+
+    private void persistAuhorities() {
+        authorityRepository.save(authoritySendDoge);
+        authorityRepository.save(authoritySendAdminDoge);
     }
 
     private void persistRoles() {

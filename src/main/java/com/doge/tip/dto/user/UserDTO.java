@@ -7,9 +7,9 @@ import java.util.UUID;
 
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class UserDTO {
 
     private UUID userId;

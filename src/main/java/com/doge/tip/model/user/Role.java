@@ -1,13 +1,11 @@
 package com.doge.tip.model.user;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
-import org.w3c.dom.stylesheets.LinkStyle;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.List;
@@ -33,7 +31,7 @@ public class Role {
             strategy = "uuid2"
     )
     @NotNull(message = "The value userId must be NOT null and hence must be set!")
-    @Column(name = "role_id", nullable = false, unique = true)
+    @Column(name = "role_id", nullable = false, unique = true, updatable = false, insertable = false)
     private UUID roleId;
 
     @Size(max = 100)
@@ -48,16 +46,13 @@ public class Role {
     @Column(name = "role_description", length = 100)
     private String roleDescription;
 
-//    @ManyToMany
-//    @JoinTable(
-//            name = "role_authorities",
-//            joinColumns = @JoinColumn(
-//                    name = "role_id", referencedColumnName = "user_id"),
-//            inverseJoinColumns = @JoinColumn(
-//                    name = "authority_id", referencedColumnName = "role_id"))
-//    private List<Authorities> authorities;
+    @NotEmpty(message = "Each role must have at least a single authority! Insert an authority to the role")
+    @ManyToMany(fetch = FetchType.LAZY, targetEntity = Authority.class)
+    @JoinTable(
+            name = "roles_authorities",
+            joinColumns = @JoinColumn(name = "role_id"),
+            inverseJoinColumns = @JoinColumn(name = "authority_id")
+    )
+    private Set<Authority> authorities;
 
-//    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-//    @JoinColumn(name = "role_authorities", referencedColumnName = "role")
-//    private Set<Authorities> roleAuthorities;
 }

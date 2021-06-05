@@ -28,16 +28,16 @@ public class Authority {
             strategy = "uuid2"
     )
     @Column(name = "authority_id", unique = true, nullable = false, updatable = false, insertable = false)
-    private UUID authorityId;
+    private UUID id;
 
     @NotNull(message = "The authority name must NOT be left empty (null)! Please, input a non-null value!")
     @NotBlank(message = "The authority name must NOT be left blank (without an alpha-numeric sign)!")
     @Size(max = 100, message = "The highest amount of characters in authority name allowed is 100 (a hundred)!")
     @Column(name = "authority_name", nullable = false, length = 100, unique = true)
-    private String authorityName;
+    private String name;
 
     @Size(max = 255, message = "The highest amount of characters in authority description allowed is 255!")
     @Column(name = "authority_description", length = 100)
-    private String authorityDescription;
+    private String description;
 
 }

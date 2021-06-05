@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public interface UserRepository extends CrudRepository<User, UUID> {
 
-    @Query("SELECT u FROM User u WHERE u.userName = :username")
-    public User getUserByUserName(@Param("username") String username);
+    @Query("SELECT u FROM User u WHERE u.name = :name")
+    public User getUserByName(@Param("name") String name);
 
 }

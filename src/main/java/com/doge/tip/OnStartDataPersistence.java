@@ -25,16 +25,16 @@ public class OnStartDataPersistence implements CommandLineRunner {
     private final AuthorityRepository authorityRepository;
     private final UserLogic userLogic;
 
-    private final Authority authoritySendDoge = Authority.builder().authorityName("sendDogeAuthority")
-            .authorityDescription("authority to Send Doge").build();
-    private final Authority authoritySendAdminDoge = Authority.builder().authorityName("sendAdminDogeAuthority")
-            .authorityDescription("Authority to send Admin Doge").build();
+    private final Authority authoritySendDoge = Authority.builder().name("sendDogeAuthority")
+            .description("authority to Send Doge").build();
+    private final Authority authoritySendAdminDoge = Authority.builder().name("sendAdminDogeAuthority")
+            .description("Authority to send Admin Doge").build();
 
-    private final Role adminRole = Role.builder().roleName("admin").roleDescription("Admin Role")
+    private final Role adminRole = Role.builder().name("admin").description("Admin Role")
             .authorities(new HashSet<>(Stream.of(authoritySendDoge, authoritySendAdminDoge)
                 .collect(Collectors.toSet())))
             .build();
-    private final Role userRole = Role.builder().roleName("user").roleDescription("User Role")
+    private final Role userRole = Role.builder().name("user").description("User Role")
             .authorities(new HashSet<>(Stream.of(authoritySendDoge).collect(Collectors.toSet())))
             .build();
 
@@ -68,9 +68,9 @@ public class OnStartDataPersistence implements CommandLineRunner {
     }
 
     private void persistUsers() {
-        userRepository.save(User.builder().userName("Jozef").userRoles(Stream.of(adminRole, userRole)
+        userRepository.save(User.builder().name("Jozef").userRoles(Stream.of(adminRole, userRole)
                 .collect(Collectors.toSet())).password(userLogic.encryptUserPassword("1234")).build());
-        userRepository.save(User.builder().userName("Pavol").userRoles(Stream.of(userRole)
+        userRepository.save(User.builder().name("Pavol").userRoles(Stream.of(userRole)
                 .collect(Collectors.toSet())).password(userLogic.encryptUserPassword("1234")).build());
     }
 }

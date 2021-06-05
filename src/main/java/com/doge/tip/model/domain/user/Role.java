@@ -29,21 +29,21 @@ public class Role {
             name = "pg-uuid",
             strategy = "uuid2"
     )
-    @NotNull(message = "The value userId must be NOT null and hence must be set!")
+    @NotNull(message = "The value id must be NOT null and hence must be set!")
     @Column(name = "role_id", nullable = false, unique = true, updatable = false, insertable = false)
-    private UUID roleId;
+    private UUID id;
 
     @Size(max = 100)
     @NotBlank(message = "The role name must NOT be left without any characters!")
     @NotNull(message = "The role name must NOT be without VALUE!")
     @Column(name = "role_name", nullable = false, length = 100)
-    private String roleName;
+    private String name;
 
     @Size(max = 100)
     @NotBlank(message = "The role description must NOT be left without any characters!")
     @NotNull(message = "The role description must NOT be without VALUE!")
     @Column(name = "role_description", length = 100)
-    private String roleDescription;
+    private String description;
 
     @NotEmpty(message = "Each role must have at least a single authority! Insert an authority to the role")
     @ManyToMany(fetch = FetchType.LAZY, targetEntity = Authority.class)

@@ -12,6 +12,6 @@ import java.util.UUID;
 @Repository
 public interface AuthorityRepository extends JpaRepository<Authority, UUID> {
 
-    @Query(value = "SELECT a from Authority a WHERE a.authorityName = :authorityName")
-    Optional<Authority> getAuthorityByAuthorityName(@Param(value = "authorityName") String authorityName);
+    @Query(value = "SELECT a from Authority a WHERE a.name = :name")
+    Optional<Authority> getAuthorityByName(@Param(value = "name") String name);
 }

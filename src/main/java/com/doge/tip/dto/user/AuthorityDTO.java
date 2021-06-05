@@ -10,7 +10,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class AuthorityDTO {
-    private UUID authorityId;
-    private String authorityName;
-    private String authorityDescription;
+    private UUID id;
+    private String name;
+    private String description;
 }

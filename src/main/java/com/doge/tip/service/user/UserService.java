@@ -12,13 +12,18 @@ import com.doge.tip.model.domain.user.*;
 import com.doge.tip.model.repository.user.AuthorityRepository;
 import com.doge.tip.model.repository.user.RoleRepository;
 import com.doge.tip.model.repository.user.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 @Service
 public class UserService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(UserService.class);
 
     private final RoleRepository roleRepository;
     private final UserRepository userRepository;
@@ -41,22 +46,20 @@ public class UserService {
         this.userLogic = userLogic;
     }
 
-    public Optional<RoleDTO> createUserRole(RoleDTO dto) {
+    public RoleDTO createUserRole(RoleDTO dto) {
         try {
             dto.setAuthorities(userLogic.assignExistingAuthorities(dto.getAuthorities()));
 
             Role role = roleConverter.toEntity(dto);;
             roleRepository.save(role);
         } catch (RuntimeException e) {
-            throw new APIRequestException(String.format("error trying to persist entity %s with name %s! Error message:" +
-                            " %s",dto.getClass(),
-                    dto.getRoleName(),
-                    e.getMessage()));
+            LOG.error("Error persisting entity", e);
+            throw new APIRequestException(createAPIRequestExceptionMessage(dto, e));
         }
-        return Optional.of(dto);
+        return dto;
     }
 
-    public Optional<UserDTO> createUser(UserDTO dto) {
+    public UserDTO createUser(UserDTO dto) {
         try {
             dto.setPassword(userLogic.encryptUserPassword(dto.getPassword()));
             dto.setUserRoles(userLogic.assignExistingRoles(dto.getUserRoles()));
@@ -64,25 +67,32 @@ public class UserService {
 
             userRepository.save(user);
         } catch (RuntimeException e) {
-            throw new APIRequestException(String.format("error trying to persist entity %s with name %s! Error message:" +
-                            " %s",dto.getClass(),
-                    dto.getUserName(),
-                    e.getMessage()));
+            LOG.error("Error persisting entity", e);
+            throw new APIRequestException(createAPIRequestExceptionMessage(dto, e));
         }
-        return Optional.of(dto);
+        return dto;
     }
 
-    public Optional<AuthorityDTO> createAuthority(AuthorityDTO dto) {
+    public AuthorityDTO createAuthority(AuthorityDTO dto) {
         try {
             Authority authority = authorityConverter.toEntity(dto);
 
             authorityRepository.save(authority);
         } catch (RuntimeException e) {
-            throw new APIRequestException(String.format("error trying to persist entity %s with name %s! Error message:" +
-                            " %s",dto.getClass(),
-                    dto.getAuthorityName(),
-                    e.getMessage()));
+            LOG.error("Error persisting entity", e);
+            throw new APIRequestException(createAPIRequestExceptionMessage(dto, e));
         }
-        return Optional.of(dto);
+        return dto;
+    }
+
+    private String createAPIRequestExceptionMessage(Object dto, RuntimeException e) {
+        String exceptionMessage = "error trying to persist entity %s with name %s! Error message: %s";
+        try {
+            Method method = dto.getClass().getMethod("getName");
+            exceptionMessage = String.format(exceptionMessage, dto.getClass().getTypeName(), method.invoke(dto), e.getMessage());
+        } catch( NoSuchMethodException | InvocationTargetException | IllegalAccessException ex) {
+            LOG.error("Reflection error", ex);
+        }
+        return exceptionMessage;
     }
 }

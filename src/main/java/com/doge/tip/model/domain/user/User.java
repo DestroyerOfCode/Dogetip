@@ -32,15 +32,15 @@ public class User {
             name = "pg-uuid",
             strategy = "uuid2"
     )
-    @NotNull(message = "The value userId must be NOT null and hence must be set!")
+    @NotNull(message = "The value user_id must be NOT null and hence must be set!")
     @Column(name = "user_id", nullable = false, updatable = false, unique = true, insertable = false)
-    private UUID userId;
+    private UUID id;
 
     @Size(max = 100)
     @NotBlank(message = "The user name must NOT be left without any characters!")
-    @NotNull(message = "The value userName must be NOT null and hence must be set!")
+    @NotNull(message = "The value name must be NOT null and hence must be set!")
     @Column(name = "user_name", nullable = false, length = 100)
-    private String userName;
+    private String name;
 
     @Size(min = 1, max = 100)
     @NotBlank(message = "The password must NOT be left without any characters!")

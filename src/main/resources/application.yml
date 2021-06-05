@@ -13,3 +13,5 @@ spring:
     hibernate:
       ddl-auto: create-drop
     database: postgresql
+server:
+  port: 8090

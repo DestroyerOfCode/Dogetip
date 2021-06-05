@@ -12,8 +12,8 @@ import java.util.UUID;
 @Builder
 public class RoleDTO {
 
-    private UUID roleId;
-    private String roleName;
-    private String roleDescription;
+    private UUID id;
+    private String name;
+    private String description;
     private Set<AuthorityDTO> authorities;
 }

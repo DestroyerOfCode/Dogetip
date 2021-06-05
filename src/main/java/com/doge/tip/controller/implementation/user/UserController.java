@@ -3,7 +3,10 @@ package com.doge.tip.controller.implementation.user;
 import com.doge.tip.dto.user.AuthorityDTO;
 import com.doge.tip.dto.user.RoleDTO;
 import com.doge.tip.dto.user.UserDTO;
+import com.doge.tip.exception.common.APIRequestException;
 import com.doge.tip.service.user.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -13,9 +16,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.lang.reflect.InvocationTargetException;
+
 @RestController(value = "user")
 @RequestMapping(value = "user")
 public class UserController {
+
+    private static final Logger LOG = LoggerFactory.getLogger(UserController.class);
 
     private final UserService userService;
 
@@ -26,22 +33,31 @@ public class UserController {
 
     @PostMapping(value = "role/add", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RoleDTO> createUserRole(@RequestBody RoleDTO dto) {
-        if (userService.createUserRole(dto).isPresent())
-            return new ResponseEntity<>(dto, HttpStatus.CREATED);
-        return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        try {
+            return new ResponseEntity<>(userService.createUserRole(dto), HttpStatus.CREATED);
+        } catch (APIRequestException e) {
+            LOG.error("Error persisting entity", e);
+            return new ResponseEntity<>(dto, HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PostMapping(value = "user/add", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO dto) {
-        if (userService.createUser(dto).isPresent())
-            return new ResponseEntity<>(dto, HttpStatus.CREATED);
-        return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        try {
+            return new ResponseEntity<>(userService.createUser(dto), HttpStatus.CREATED);
+        } catch (APIRequestException e) {
+            LOG.error("Error persisting entity", e);
+            return new ResponseEntity<>(dto, HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PostMapping(value = "authority/add", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AuthorityDTO> createAuthority(@RequestBody AuthorityDTO dto) {
-        if (userService.createAuthority(dto).isPresent())
-            return new ResponseEntity<>(dto, HttpStatus.CREATED);
-        return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        try {
+            return new ResponseEntity<>(userService.createAuthority(dto), HttpStatus.CREATED);
+        } catch (APIRequestException e) {
+            LOG.error("Error persisting entity", e);
+            return new ResponseEntity<>(dto, HttpStatus.BAD_REQUEST);
+        }
     }
 }

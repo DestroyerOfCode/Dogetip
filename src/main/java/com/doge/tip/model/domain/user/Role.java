@@ -1,4 +1,4 @@
-package com.doge.tip.model.user;
+package com.doge.tip.model.domain.user;
 
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
@@ -8,7 +8,6 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 

@@ -4,10 +4,11 @@ import com.doge.tip.converter.user.AuthorityConverter;
 import com.doge.tip.converter.user.RoleConverter;
 import com.doge.tip.dto.user.AuthorityDTO;
 import com.doge.tip.dto.user.RoleDTO;
-import com.doge.tip.model.user.Authority;
-import com.doge.tip.model.user.AuthorityRepository;
-import com.doge.tip.model.user.Role;
-import com.doge.tip.model.user.RoleRepository;
+import com.doge.tip.exception.user.MissingElementException;
+import com.doge.tip.model.domain.user.Authority;
+import com.doge.tip.model.repository.user.AuthorityRepository;
+import com.doge.tip.model.domain.user.Role;
+import com.doge.tip.model.repository.user.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -47,29 +48,21 @@ public class UserLogic {
 
     public Set<RoleDTO> assignExistingRoles(Set<RoleDTO> userDTOUserRoles) {
         Set<Role> userRoles = new HashSet<>();
-        if (!userDTOUserRoles.stream().allMatch(x -> {
-            Optional<Role> role =  roleRepository.getRoleByRoleName(x.getRoleName());
-            if (role.isPresent()) {
-                userRoles.add(role.get());
-                return true;
-            }
-            return false;
-        }))
-            throw new RuntimeException("Unexisting roles");
+        userDTOUserRoles.forEach(x -> userRoles.add(roleRepository.getRoleByRoleName(x.getRoleName())
+                .orElseThrow(() -> new MissingElementException(String.format("Cannot find Role %s." +
+                        "Perhaps try inserting the role before assigning to a user.", x.getRoleName())))
+                )
+        );
         return userRoles.stream().map(roleConverter::toDTO).collect(Collectors.toSet());
     }
 
     public Set<AuthorityDTO> assignExistingAuthorities(Set<AuthorityDTO> authorityDTOS) {
         Set<Authority> authorities = new HashSet<>();
-        if (!authorityDTOS.stream().allMatch(x -> {
-            Optional<Authority> authority =  authorityRepository.getAuthorityByAuthorityName(x.getAuthorityName());
-            if (authority.isPresent()) {
-                authorities.add(authority.get());
-                return true;
-            }
-            return false;
-        }))
-            throw new RuntimeException("Unexisting authorities");
+        authorityDTOS.forEach(x -> authorities.add(authorityRepository.getAuthorityByAuthorityName(x.getAuthorityName())
+                .orElseThrow(() -> new MissingElementException(String.format("Cannot find authority %s." +
+                        "Perhaps try inserting the authority before assigning to a role.", x.getAuthorityName())))
+                )
+        );
         return authorities.stream().map(authorityConverter::toDTO).collect(Collectors.toSet());
     }
 }

@@ -1,4 +1,4 @@
-package com.doge.tip.model.user;
+package com.doge.tip.model.domain.user;
 
 import lombok.Builder;
 import lombok.Getter;

@@ -7,7 +7,11 @@ import com.doge.tip.converter.user.UserConverter;
 import com.doge.tip.dto.user.AuthorityDTO;
 import com.doge.tip.dto.user.RoleDTO;
 import com.doge.tip.dto.user.UserDTO;
-import com.doge.tip.model.user.*;
+import com.doge.tip.exception.common.APIRequestException;
+import com.doge.tip.model.domain.user.*;
+import com.doge.tip.model.repository.user.AuthorityRepository;
+import com.doge.tip.model.repository.user.RoleRepository;
+import com.doge.tip.model.repository.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -43,8 +47,11 @@ public class UserService {
 
             Role role = roleConverter.toEntity(dto);;
             roleRepository.save(role);
-        } catch (Exception e) {
-            System.out.println("oopsie");
+        } catch (RuntimeException e) {
+            throw new APIRequestException(String.format("error trying to persist entity %s with name %s! Error message:" +
+                            " %s",dto.getClass(),
+                    dto.getRoleName(),
+                    e.getMessage()));
         }
         return Optional.of(dto);
     }
@@ -56,8 +63,11 @@ public class UserService {
             User user = userConverter.toEntity(dto);
 
             userRepository.save(user);
-        } catch (Exception e) {
-            System.out.println("oopsie");
+        } catch (RuntimeException e) {
+            throw new APIRequestException(String.format("error trying to persist entity %s with name %s! Error message:" +
+                            " %s",dto.getClass(),
+                    dto.getUserName(),
+                    e.getMessage()));
         }
         return Optional.of(dto);
     }
@@ -67,8 +77,11 @@ public class UserService {
             Authority authority = authorityConverter.toEntity(dto);
 
             authorityRepository.save(authority);
-        } catch (Exception e) {
-            System.out.println("oopsie");
+        } catch (RuntimeException e) {
+            throw new APIRequestException(String.format("error trying to persist entity %s with name %s! Error message:" +
+                            " %s",dto.getClass(),
+                    dto.getAuthorityName(),
+                    e.getMessage()));
         }
         return Optional.of(dto);
     }

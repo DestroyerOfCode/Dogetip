@@ -1,7 +1,7 @@
 package com.doge.tip.converter.user;
 
 import com.doge.tip.dto.user.UserDTO;
-import com.doge.tip.model.user.User;
+import com.doge.tip.model.domain.user.User;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

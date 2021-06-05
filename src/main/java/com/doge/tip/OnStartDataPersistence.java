@@ -1,7 +1,10 @@
 package com.doge.tip;
 
 import com.doge.tip.businesslogic.user.UserLogic;
-import com.doge.tip.model.user.*;
+import com.doge.tip.model.domain.user.*;
+import com.doge.tip.model.repository.user.AuthorityRepository;
+import com.doge.tip.model.repository.user.RoleRepository;
+import com.doge.tip.model.repository.user.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,5 +1,6 @@
-package com.doge.tip.model.user;
+package com.doge.tip.model.repository.user;
 
+import com.doge.tip.model.domain.user.Role;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;

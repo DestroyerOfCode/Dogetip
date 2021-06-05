@@ -63,6 +63,10 @@ public class UserLogic {
                         LOG.error("Error finding an element!", e);
                         throw new MissingElementException(createMissingElementExceptionMessage(dto));
                     }
+                catch (RuntimeException e) {
+                    LOG.error("Error finding an element!", e);
+                    throw e;
+                    }
                 });
 
         return userRoles.stream().map(roleConverter::toDTO).collect(Collectors.toSet());

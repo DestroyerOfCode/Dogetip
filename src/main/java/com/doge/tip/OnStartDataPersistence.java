@@ -50,14 +50,14 @@ public class OnStartDataPersistence implements CommandLineRunner {
     @Override
     public void run(String...args) throws Exception {
 
-        persistAuhorities();
+        persistAuthorities();
         persistRoles();
         persistUsers();
 
         LOG.info("Finished persisting initial data");
     }
 
-    private void persistAuhorities() {
+    private void persistAuthorities() {
         authorityRepository.save(authoritySendDoge);
         authorityRepository.save(authoritySendAdminDoge);
     }

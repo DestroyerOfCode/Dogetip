@@ -33,31 +33,16 @@ public class UserController {
 
     @PostMapping(value = "role/add", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<RoleDTO> createUserRole(@RequestBody RoleDTO dto) {
-        try {
             return new ResponseEntity<>(userService.createUserRole(dto), HttpStatus.CREATED);
-        } catch (APIRequestException e) {
-            LOG.error("Error persisting entity", e);
-            return new ResponseEntity<>(dto, HttpStatus.BAD_REQUEST);
-        }
     }
 
     @PostMapping(value = "user/add", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO dto) {
-        try {
             return new ResponseEntity<>(userService.createUser(dto), HttpStatus.CREATED);
-        } catch (APIRequestException e) {
-            LOG.error("Error persisting entity", e);
-            return new ResponseEntity<>(dto, HttpStatus.BAD_REQUEST);
-        }
     }
 
     @PostMapping(value = "authority/add", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AuthorityDTO> createAuthority(@RequestBody AuthorityDTO dto) {
-        try {
             return new ResponseEntity<>(userService.createAuthority(dto), HttpStatus.CREATED);
-        } catch (APIRequestException e) {
-            LOG.error("Error persisting entity", e);
-            return new ResponseEntity<>(dto, HttpStatus.BAD_REQUEST);
-        }
     }
 }

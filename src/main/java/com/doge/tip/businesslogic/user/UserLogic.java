@@ -20,7 +20,6 @@ import org.springframework.stereotype.Component;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashSet;
-import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -57,17 +56,10 @@ public class UserLogic {
     public Set<RoleDTO> assignExistingRoles(Set<RoleDTO> userDTOUserRoles) {
         Set<Role> userRoles = new HashSet<>();
             userDTOUserRoles.forEach(dto -> {
-                try {
-                    userRoles.add(roleRepository.getRoleByName(dto.getName()).orElseThrow(NoSuchElementException::new));
-                } catch(NoSuchElementException e){
-                        LOG.error("Error finding an element!", e);
-                        throw new MissingElementException(createMissingElementExceptionMessage(dto));
-                    }
-                catch (RuntimeException e) {
-                    LOG.error("Error finding an element!", e);
-                    throw e;
-                    }
-                });
+                userRoles.add(roleRepository.getRoleByName(dto.getName()).orElseThrow( () ->
+                        new MissingElementException(createMissingElementExceptionMessage(dto))
+                ));
+            });
 
         return userRoles.stream().map(roleConverter::toDTO).collect(Collectors.toSet());
     }
@@ -75,14 +67,9 @@ public class UserLogic {
     public Set<AuthorityDTO> assignExistingAuthorities(Set<AuthorityDTO> authorityDTOS) {
         Set<Authority> authorities = new HashSet<>();
             authorityDTOS.forEach(dto -> {
-                try {
-                    authorities.add(authorityRepository.getAuthorityByName(dto.getName())
-                            .orElseThrow(NoSuchElementException::new)
-                    );
-                } catch(NoSuchElementException e) {
-                    LOG.error("Error finding an element!", e);
-                    throw new MissingElementException(createMissingElementExceptionMessage(dto));
-                }
+                authorities.add(authorityRepository.getAuthorityByName(dto.getName()).orElseThrow( () ->
+                        new MissingElementException(createMissingElementExceptionMessage(dto)))
+                );
             });
 
         return authorities.stream().map(authorityConverter::toDTO).collect(Collectors.toSet());

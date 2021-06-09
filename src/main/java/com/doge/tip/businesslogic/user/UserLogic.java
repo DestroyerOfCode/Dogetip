@@ -1,11 +1,9 @@
 package com.doge.tip.businesslogic.user;
 
-import com.doge.tip.OnStartDataPersistence;
 import com.doge.tip.converter.user.AuthorityConverter;
 import com.doge.tip.converter.user.RoleConverter;
 import com.doge.tip.dto.user.AuthorityDTO;
 import com.doge.tip.dto.user.RoleDTO;
-import com.doge.tip.dto.user.UserDTO;
 import com.doge.tip.exception.user.MissingElementException;
 import com.doge.tip.model.domain.user.Authority;
 import com.doge.tip.model.repository.user.AuthorityRepository;
@@ -46,7 +44,9 @@ public class UserLogic {
 
     public String encryptUserPassword(String plainTextPassword) {
         try {
-            return passwordEncoder.encode(plainTextPassword);
+            String encodedPassword = passwordEncoder.encode(plainTextPassword);
+            if (null != encodedPassword)
+                return encodedPassword;
         } catch (IllegalArgumentException e) {
             LOG.error("Could not encode password", e);
         }

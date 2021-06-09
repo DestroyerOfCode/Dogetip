@@ -47,7 +47,7 @@ public class UserLogic {
     public String encryptUserPassword(String plainTextPassword) {
         try {
             return passwordEncoder.encode(plainTextPassword);
-        } catch (RuntimeException e) {
+        } catch (IllegalArgumentException e) {
             LOG.error("Could not encode password", e);
         }
         throw new RuntimeException("error encrypting password");

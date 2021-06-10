@@ -86,7 +86,7 @@ public class UserLogicTest {
     @DisplayName(value = "encrypt string using Bcrypt algorithm but expect thrown expection")
     void encryptPasswordWithBcryptExpectException(TestInfo testInfo, TestReporter testReporter) {
         testInfo.getDisplayName();
-        when(passwordEncoder.encode("")).thenReturn(null);
+        when(passwordEncoder.encode("")).thenThrow(RuntimeException.class);
         assertThrows(RuntimeException.class,
                 () -> userLogic.encryptUserPassword(""),
                 () -> "expected exception");

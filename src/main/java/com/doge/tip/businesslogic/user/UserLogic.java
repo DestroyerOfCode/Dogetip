@@ -44,9 +44,7 @@ public class UserLogic {
 
     public String encryptUserPassword(String plainTextPassword) {
         try {
-            String encodedPassword = passwordEncoder.encode(plainTextPassword);
-            if (null != encodedPassword)
-                return encodedPassword;
+            return passwordEncoder.encode(plainTextPassword);
         } catch (IllegalArgumentException e) {
             LOG.error("Could not encode password", e);
         }

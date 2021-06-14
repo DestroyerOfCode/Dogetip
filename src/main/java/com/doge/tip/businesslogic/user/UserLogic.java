@@ -43,8 +43,10 @@ public class UserLogic {
     }
 
     public String encryptUserPassword(String plainTextPassword) {
+        String encodedPassword = "";
         try {
-            return passwordEncoder.encode(plainTextPassword);
+            encodedPassword = passwordEncoder.encode(plainTextPassword);
+            return encodedPassword;
         } catch (IllegalArgumentException e) {
             LOG.error("Could not encode password", e);
         }

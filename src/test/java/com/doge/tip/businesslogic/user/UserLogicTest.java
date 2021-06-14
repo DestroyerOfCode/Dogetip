@@ -1,6 +1,5 @@
-package com.doge.tip.usinesslogic.user;
+package com.doge.tip.businesslogic.user;
 
-import com.doge.tip.businesslogic.user.UserLogic;
 import com.doge.tip.converter.user.AuthorityConverter;
 import com.doge.tip.converter.user.RoleConverter;
 import com.doge.tip.dto.user.AuthorityDTO;
@@ -11,6 +10,12 @@ import com.doge.tip.model.domain.user.Role;
 import com.doge.tip.model.repository.user.AuthorityRepository;
 import com.doge.tip.model.repository.user.RoleRepository;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.BDDMockito;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.HashSet;
@@ -31,11 +36,7 @@ public class UserLogicTest {
     static AuthorityConverter authorityConverter;
     static AuthorityRepository authorityRepository;
 
-    UserLogic userLogic = new UserLogic(passwordEncoder,
-            roleRepository,
-            roleConverter,
-            authorityConverter,
-            authorityRepository);
+    private UserLogic userLogic;
 
     AuthorityDTO authorityDTO;
     Authority authority;
@@ -53,7 +54,8 @@ public class UserLogicTest {
 
     @BeforeEach
     void setUpObjects() {
-
+        userLogic  = new UserLogic(passwordEncoder, roleRepository, roleConverter, authorityConverter,
+                authorityRepository);
         authorityDTO = AuthorityDTO.builder().name("sendAdminDogeAuthority").build();
         authority = Authority.builder().name("sendAdminDogeAuthority").build();
         roleDTO = RoleDTO.builder().name("admin").description("admin role")
@@ -70,33 +72,42 @@ public class UserLogicTest {
         authority = null;
         roleDTO = null;
         role = null;
+        userLogic = null;
     }
 
-    @Test
+    @ParameterizedTest
+    @MethodSource(value = "providePasswordsforEncryption")
     @DisplayName(value = "encrypt string using Bcrypt algorithm")
-    void encryptPasswordWithBcrypt(TestInfo testInfo, TestReporter testReporter) {
-        String plainTextPassword = "";
-        when(passwordEncoder.encode(plainTextPassword)).thenReturn("encryptedPassword");
+    void encryptPasswordWithBcrypt(String plainTextPassword, String result, TestInfo testInfo, TestReporter testReporter) {
+        when(passwordEncoder.encode(plainTextPassword)).thenReturn(result);
         assertEquals(assertDoesNotThrow( () -> userLogic.encryptUserPassword(plainTextPassword),
                 () -> "the method encryptUserPassword has thrown an unexpected exception"),
-                "encryptedPassword");
+                result);
+    }
+
+    private static Stream<Arguments> providePasswordsforEncryption() {
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        return Stream.of(
+                Arguments.of("password", passwordEncoder.encode("password")),
+                Arguments.of("", passwordEncoder.encode("")),
+                Arguments.of("    ", passwordEncoder.encode("    "))
+        );
     }
 
     @Test
     @DisplayName(value = "encrypt string using Bcrypt algorithm but expect thrown expection")
     void encryptPasswordWithBcryptExpectException(TestInfo testInfo, TestReporter testReporter) {
-        testInfo.getDisplayName();
-        when(passwordEncoder.encode("")).thenThrow(RuntimeException.class);
-        assertThrows(RuntimeException.class,
-                () -> userLogic.encryptUserPassword(""),
+        when(passwordEncoder.encode(null)).thenThrow(IllegalArgumentException.class);
+        RuntimeException exception = assertThrows(RuntimeException.class,
+                () -> userLogic.encryptUserPassword(null),
                 () -> "expected exception");
+        Assertions.assertEquals(exception.getMessage(), "error encrypting password");
 
     }
 
     @Test
     @DisplayName(value = "Check whether roles exist and if yes, assign them to user entity")
     void assignExistingRoles() {
-
         when(roleRepository.getRoleByName("admin")).thenReturn(Optional.of(role));
         when(roleConverter.toDTO(role)).thenReturn(roleDTO);
 
@@ -124,7 +135,9 @@ public class UserLogicTest {
 
         Set<AuthorityDTO> authoritiesDTO = userLogic.assignExistingAuthorities(Stream.of(authorityDTO)
                 .collect(Collectors.toSet()));
-        assertTrue(authoritiesDTO.stream().allMatch(authorityDTO -> authorityDTO.getName().equals("sendAdminDogeAuthority")));
+        assertTrue(authoritiesDTO.stream().allMatch(authorityDTO -> authorityDTO.getName()
+                .equals("sendAdminDogeAuthority"))
+        );
     }
 
     @Test
@@ -133,9 +146,11 @@ public class UserLogicTest {
 
         when(authorityRepository.getAuthorityByName("sendAdminDogeAuthority")).thenReturn(Optional.empty());
 
-        assertThrows(MissingElementException.class,
+        MissingElementException exception = assertThrows(MissingElementException.class,
                 () -> userLogic.assignExistingAuthorities(Stream.of(authorityDTO).collect(Collectors.toSet())),
                 () -> "expected exception to be thrown!");
 
+        assertEquals(exception.getMessage(), "Cannot find entity com.doge.tip.dto.user.AuthorityDTO with name " +
+                "sendAdminDogeAuthority. Perhaps try inserting the before assigning to a parent entity.");
     }
 }

@@ -1,24 +1,20 @@
 package com.doge.tip.businesslogic.user;
 
+import com.doge.tip.common.user.UserCommonTest;
 import com.doge.tip.converter.user.AuthorityConverter;
 import com.doge.tip.converter.user.RoleConverter;
 import com.doge.tip.dto.user.AuthorityDTO;
 import com.doge.tip.dto.user.RoleDTO;
 import com.doge.tip.exception.user.MissingElementException;
-import com.doge.tip.model.domain.user.Authority;
-import com.doge.tip.model.domain.user.Role;
 import com.doge.tip.model.repository.user.AuthorityRepository;
 import com.doge.tip.model.repository.user.RoleRepository;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.BDDMockito;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -28,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class UserLogicTest {
+public class UserLogicTest extends UserCommonTest {
 
     static PasswordEncoder passwordEncoder;
     static RoleRepository roleRepository;
@@ -37,11 +33,6 @@ public class UserLogicTest {
     static AuthorityRepository authorityRepository;
 
     private UserLogic userLogic;
-
-    AuthorityDTO authorityDTO;
-    Authority authority;
-    RoleDTO roleDTO;
-    Role role;
 
     @BeforeAll
     static void setUpMocks() {
@@ -53,30 +44,18 @@ public class UserLogicTest {
     }
 
     @BeforeEach
-    void setUpObjects() {
+    void setUp() {
         userLogic  = new UserLogic(passwordEncoder, roleRepository, roleConverter, authorityConverter,
                 authorityRepository);
-        authorityDTO = AuthorityDTO.builder().name("sendAdminDogeAuthority").build();
-        authority = Authority.builder().name("sendAdminDogeAuthority").build();
-        roleDTO = RoleDTO.builder().name("admin").description("admin role")
-                .authorities(new HashSet<>(Stream.of(authorityDTO).collect(Collectors.toSet())))
-                .build();
-        role = Role.builder().name("admin").description("admin role")
-                .authorities(new HashSet<>(Stream.of(authority).collect(Collectors.toSet())))
-                .build();
     }
 
     @AfterEach
     void cleanUpObjects() {
-        authorityDTO = null;
-        authority = null;
-        roleDTO = null;
-        role = null;
         userLogic = null;
     }
 
     @ParameterizedTest
-    @MethodSource(value = "providePasswordsforEncryption")
+    @MethodSource(value = "providePasswordsForEncryption")
     @DisplayName(value = "encrypt string using Bcrypt algorithm")
     void encryptPasswordWithBcrypt(String plainTextPassword, String result, TestInfo testInfo, TestReporter testReporter) {
         when(passwordEncoder.encode(plainTextPassword)).thenReturn(result);
@@ -85,7 +64,7 @@ public class UserLogicTest {
                 result);
     }
 
-    private static Stream<Arguments> providePasswordsforEncryption() {
+    private static Stream<Arguments> providePasswordsForEncryption() {
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         return Stream.of(
                 Arguments.of("password", passwordEncoder.encode("password")),

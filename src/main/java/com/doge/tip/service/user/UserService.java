@@ -47,42 +47,51 @@ public class UserService {
     }
 
     public RoleDTO createUserRole(RoleDTO dto) {
+        Role role;
+
         try {
             dto.setAuthorities(userLogic.assignExistingAuthorities(dto.getAuthorities()));
 
-            Role role = roleConverter.toEntity(dto);;
-            roleRepository.save(role);
+            role = roleConverter.toEntity(dto);;
+            role = roleRepository.save(role);
+
         } catch (RuntimeException e) {
             LOG.error("Error persisting entity", e);
             throw new APIRequestException(createAPIRequestExceptionMessage(dto, e));
         }
-        return dto;
+
+        return roleConverter.toDTO(role);
     }
 
     public UserDTO createUser(UserDTO dto) {
+        User user;
+
         try {
             dto.setPassword(userLogic.encryptUserPassword(dto.getPassword()));
             dto.setUserRoles(userLogic.assignExistingRoles(dto.getUserRoles()));
-            User user = userConverter.toEntity(dto);
 
-            userRepository.save(user);
+            user = userConverter.toEntity(dto);
+            user = userRepository.save(user);
         } catch (RuntimeException e) {
             LOG.error("Error persisting entity", e);
             throw new APIRequestException(createAPIRequestExceptionMessage(dto, e));
         }
-        return dto;
+
+        return userConverter.toDTO(user);
     }
 
     public AuthorityDTO createAuthority(AuthorityDTO dto) {
-        try {
-            Authority authority = authorityConverter.toEntity(dto);
+        Authority authority;
 
-            authorityRepository.save(authority);
+        try {
+            authority = authorityConverter.toEntity(dto);
+
+            authority = authorityRepository.save(authority);
         } catch (RuntimeException e) {
             LOG.error("Error persisting entity", e);
             throw new APIRequestException(createAPIRequestExceptionMessage(dto, e));
         }
-        return dto;
+        return authorityConverter.toDTO(authority);
     }
 
     private String createAPIRequestExceptionMessage(Object dto, RuntimeException e) {

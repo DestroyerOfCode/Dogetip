@@ -11,12 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 @RestController(value = "user")
 @RequestMapping(value = "user")
@@ -44,5 +44,15 @@ public class UserController {
     @PostMapping(value = "authority/add", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AuthorityDTO> createAuthority(@RequestBody AuthorityDTO dto) {
             return new ResponseEntity<>(userService.createAuthority(dto), HttpStatus.CREATED);
+    }
+
+    @GetMapping(value = "user/{userId}")
+    public ResponseEntity<UserDTO> getUserById(@PathVariable(required = false) UUID userId) {
+        return new ResponseEntity<>(userService.getUserById(userId), HttpStatus.ACCEPTED);
+    }
+
+    @GetMapping(value = "user")
+    public ResponseEntity<List<UserDTO>> getAllUsers() {
+        return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.ACCEPTED);
     }
 }

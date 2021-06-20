@@ -6,9 +6,11 @@ import com.doge.tip.dto.user.AuthorityDTO;
 import com.doge.tip.dto.user.RoleDTO;
 import com.doge.tip.exception.user.MissingElementException;
 import com.doge.tip.model.domain.user.Authority;
+import com.doge.tip.model.domain.user.User;
 import com.doge.tip.model.repository.user.AuthorityRepository;
 import com.doge.tip.model.domain.user.Role;
 import com.doge.tip.model.repository.user.RoleRepository;
+import com.doge.tip.model.repository.user.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +19,7 @@ import org.springframework.stereotype.Component;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -27,6 +28,7 @@ public class UserLogic {
     private static final Logger LOG = LoggerFactory.getLogger(UserLogic.class);
 
     private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
     private final AuthorityRepository authorityRepository;
     private final RoleRepository roleRepository;
     private final AuthorityConverter authorityConverter;
@@ -34,12 +36,14 @@ public class UserLogic {
 
     @Autowired
     public UserLogic(PasswordEncoder passwordEncoder, RoleRepository roleRepository, RoleConverter roleConverter,
-                     AuthorityConverter authorityConverter, AuthorityRepository authorityRepository) {
+                     AuthorityConverter authorityConverter, AuthorityRepository authorityRepository,
+                     UserRepository userRepository) {
         this.passwordEncoder = passwordEncoder;
         this.authorityRepository = authorityRepository;
         this.roleRepository = roleRepository;
         this.authorityConverter = authorityConverter;
         this.roleConverter = roleConverter;
+        this.userRepository = userRepository;
     }
 
     public String encryptUserPassword(String plainTextPassword) {
@@ -62,6 +66,14 @@ public class UserLogic {
             });
 
         return userRoles.stream().map(roleConverter::toDTO).collect(Collectors.toSet());
+    }
+
+    public Optional<User> getUserById(UUID userId) {
+        return userRepository.findById(userId);
+    }
+
+    public ArrayList<User> getAllUsers() {
+        return  (ArrayList<User>) userRepository.findAll();
     }
 
     public Set<AuthorityDTO> assignExistingAuthorities(Set<AuthorityDTO> authorityDTOS) {

@@ -12,6 +12,7 @@ import com.doge.tip.model.domain.user.*;
 import com.doge.tip.model.repository.user.AuthorityRepository;
 import com.doge.tip.model.repository.user.RoleRepository;
 import com.doge.tip.model.repository.user.UserRepository;
+import javassist.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,8 @@ import org.springframework.stereotype.Service;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -92,6 +95,30 @@ public class UserService {
             throw new APIRequestException(createAPIRequestExceptionMessage(dto, e));
         }
         return authorityConverter.toDTO(authority);
+    }
+
+    public UserDTO getUserById(UUID userId) {
+        Optional<User> user;
+
+        try {
+            user = userLogic.getUserById(userId);
+        } catch(RuntimeException e) {
+            throw new APIRequestException(e.getMessage());
+        }
+
+        return userConverter.toDTO(user.orElseThrow());
+    }
+
+    public List<UserDTO> getAllUsers() {
+        List<User> users;
+
+        try {
+            users = userLogic.getAllUsers();
+        } catch(RuntimeException e) {
+            throw new APIRequestException(e.getMessage());
+        }
+
+        return users.stream().map(userConverter::toDTO).collect(Collectors.toList());
     }
 
     private String createAPIRequestExceptionMessage(Object dto, RuntimeException e) {

@@ -6,8 +6,10 @@ import com.doge.tip.converter.user.RoleConverter;
 import com.doge.tip.dto.user.AuthorityDTO;
 import com.doge.tip.dto.user.RoleDTO;
 import com.doge.tip.exception.user.MissingElementException;
+import com.doge.tip.model.domain.user.User;
 import com.doge.tip.model.repository.user.AuthorityRepository;
 import com.doge.tip.model.repository.user.RoleRepository;
+import com.doge.tip.model.repository.user.UserRepository;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -15,12 +17,12 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -31,6 +33,7 @@ public class UserLogicTest extends UserCommonTest {
     static RoleConverter roleConverter;
     static AuthorityConverter authorityConverter;
     static AuthorityRepository authorityRepository;
+    static UserRepository userRepository;
 
     private UserLogic userLogic;
 
@@ -41,12 +44,13 @@ public class UserLogicTest extends UserCommonTest {
         roleConverter = mock(RoleConverter.class);
         authorityConverter = mock(AuthorityConverter.class);
         authorityRepository = mock(AuthorityRepository.class);
+        userRepository = mock(UserRepository.class);
     }
 
     @BeforeEach
     void setUp() {
         userLogic  = new UserLogic(passwordEncoder, roleRepository, roleConverter, authorityConverter,
-                authorityRepository);
+                authorityRepository, userRepository);
     }
 
     @AfterEach
@@ -131,5 +135,33 @@ public class UserLogicTest extends UserCommonTest {
 
         assertEquals(exception.getMessage(), "Cannot find entity com.doge.tip.dto.user.AuthorityDTO with name " +
                 "sendAdminDogeAuthority. Perhaps try inserting the before assigning to a parent entity.");
+    }
+
+    @Test
+    @DisplayName(value = "Get a user By Id and return user")
+    void getExistingUserById() {
+
+        when(userRepository.findById(any(UUID.class))).thenReturn(Optional.of(user));
+        Optional<User> newUser = userLogic.getUserById(UUID.randomUUID());
+        newUser.ifPresent((User u) -> {
+            assertEquals(u.getName(), user.getName());
+            assertEquals(u.getPassword(), user.getPassword());
+            assertArrayEquals(u.getUserRoles().toArray(), user.getUserRoles().toArray());
+        });
+    }
+
+    @Test
+    @DisplayName(value = "Get all users from user repository and return users")
+    void getAllUsers() {
+
+        List<User> userList = new ArrayList<>();
+        userList.add(user);
+        when(userRepository.findAll()).thenReturn(userList);
+
+        userLogic.getAllUsers().forEach((User u) -> {
+            assertEquals(u.getName(), user.getName());
+            assertEquals(u.getPassword(), user.getPassword());
+            assertArrayEquals(u.getUserRoles().toArray(), user.getUserRoles().toArray());
+        });
     }
 }

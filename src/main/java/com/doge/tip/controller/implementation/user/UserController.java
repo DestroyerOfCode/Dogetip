@@ -48,11 +48,11 @@ public class UserController {
 
     @GetMapping(value = "user/{userId}")
     public ResponseEntity<UserDTO> getUserById(@PathVariable(required = false) UUID userId) {
-        return new ResponseEntity<>(userService.getUserById(userId), HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(userService.getUserById(userId), HttpStatus.OK);
     }
 
     @GetMapping(value = "user")
     public ResponseEntity<List<UserDTO>> getAllUsers() {
-        return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
     }
 }

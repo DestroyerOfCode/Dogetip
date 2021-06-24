@@ -43,10 +43,9 @@ public class SpringWebSecurity extends WebSecurityConfigurerAdapter {
             .authenticated()
             .and()
             .httpBasic()
-                .and()
-                .formLogin()
             .and()
-            .csrf(c -> c.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
+            .csrf().disable()
+//        .authorizeRequests().antMatchers("/**").permitAll().and().csrf().disable()
         ;
     }
 
